@@ -41,7 +41,7 @@ pipeline {
                 // Docker Login
                 sh 'echo ${DOCKERHUB_CRED_PSW} | docker login -u $DOCKERHUB_CRED_USR --password-stdin'
                 // Docker Hub Push
-                sh 'docker image push donanaa/spring-petclinic:latest
+                sh 'docker image push donanaa/spring-petclinic:latest'
             }
             post {
                 always {
