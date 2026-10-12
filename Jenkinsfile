@@ -4,6 +4,9 @@ pipeline {
         jdk 'JDK21'
         maven 'M3'
     }
+    environment {
+            DOCKERHUB_CRED = credentials('dockerCredentials')
+    }
     
     stages {
         //Github로 부터 소스코드 다운로드 받는 작업
@@ -21,7 +24,37 @@ pipeline {
                 sh 'mvn -Dmaven.test.failure.ignore=true clean package'
             }
         }
-        // SSH를 이용한 실행파일 전송
+        // Docker Image 생성
+        stage ('Docker Image Create') {
+            steps {
+            echo 'Docker Image Create'
+            sh '''
+                docker build -t spring-petclinic:${BUILD_NUMBER} .
+                docker tag spring-petclinic:${BUILD_NUMBER} donanaa/spring-petclinic:latest
+            '''
+            }
+        }
+        // Dockerhub Image Push
+        stage('Docker Image Push') {
+            steps { 
+                echo 'Docker Image Push'
+                // Docker Login
+                sh 'echo ${DOCKERHUB_CRED_PSW} | docker login -u $DOCKERHUB_CRED_USR --password-stdin'
+                // Docker Hub Push
+                sh 'docker image push donanaa/spring-petclinic:latest
+            }
+            post {
+                always {
+                    sh '''
+                    docker rmi -f spring-petclinic:${BUILD_NUMBER}
+                    docker rmi -f donanaa/spring-petclinic:latest
+                    '''
+
+                }
+            }
+        }
+        // Docker Image 삭제
+        // SSH를 이용한 Docker 컨테이너 실행파일 전송
         stage('SSH Publish') {
             steps{
                 echo 'SSH Pubilsh'
