@@ -5,6 +5,12 @@
 <body>
 
   <h2 th:text="#{welcome}">Welcome</h2>
+
+  <p style="padding: 12px; background: #e8f4ff; font-size: 20px;">
+    🐾 이번 요청을 처리한 파드:
+    <strong th:text="${podName}">local</strong>
+  </p>
+
   <div class="row">
     <div class="col-md-12">
       <img class="img-responsive" src="../static/resources/images/pets.png" th:src="@{/resources/images/pets.png}" />
