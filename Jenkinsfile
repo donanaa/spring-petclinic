@@ -42,5 +42,17 @@ pipeline {
                 }
             }
         }
+        stage('Kubernetes Deploy') {
+            steps {
+                sh '''
+                    set -e
+                    kubectl apply -f was-deployment.yml -n was
+                    kubectl apply -f was-service.yml -n was
+                    kubectl apply -f was-ingress.yml -n was
+                    kubectl rollout restart deployment/spring-petclinic -n was
+                    kubectl rollout status deployment/spring-petclinic -n was --timeout=180s
+                '''
+            }
+        }
     }
 }
