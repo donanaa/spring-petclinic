@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Controller
 class WelcomeController {
 
-    @ModelAttribute("podName")
-    String podName() {
-        return System.getenv().getOrDefault("POD_NAME", "local");
-    }
+	@ModelAttribute("podName")
+	String podName() {
+		return System.getenv().getOrDefault("POD_NAME", "local");
+	}
 
-    @GetMapping("/")
-    public String welcome() {
-        return "welcome";
-    }
+	@GetMapping("/")
+	public String welcome() {
+		return "welcome";
+	}
 
 }
