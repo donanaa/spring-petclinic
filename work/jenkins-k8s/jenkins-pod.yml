@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jenkins
+  namespace: jenkins
+  labels:
+    app: jenkins
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-node01
+  securityContext:
+    supplementalGroups:
+      - 988
+  containers:
+    - name: jenkins
+      image: donanaa/jenkins-docker:1.2
+      imagePullPolicy: Always
+      env:
+        - name: JENKINS_OPTS
+          value: "--prefix=/jenkins"
+      ports:
+        - containerPort: 8080
+        - containerPort: 50000
+      volumeMounts:
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+  volumes:
+    - name: jenkins-home
+      persistentVolumeClaim:
+        claimName: jenkins-pvc
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+        type: Socket
